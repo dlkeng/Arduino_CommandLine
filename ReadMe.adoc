@@ -1,5 +1,5 @@
 CommandLine Arduino Library Usage - Version: "V1.10 7/7/2023"
-(see link:docs/html/class_command_line.html[CommandLine Web Page] and link:examples[CommandLineTest.ino] and link:examples[CommandLineCustomErrs.ino] examples)
+(see link:docs/html/class_command_line.html[CommandLine Web Page] and link:examples/CommandLineTest[CommandLineTest.ino] and link:examples/CommandLineCustomErrs[CommandLineCustomErrs.ino] examples)
 ---------------------------------
 
 The CommandLine Arduino library can be used to provide a simple menu-driven command line to
