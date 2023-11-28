@@ -1,0 +1,228 @@
+CommandLine Arduino Library Usage - Version: "V1.10 7/7/2023"
+(see CommandLine Web Page and CommandLineTest.ino and CommandLineCustomErrs.ino examples)
+---------------------------------
+
+The CommandLine Arduino library can be used to provide a simple menu-driven command line to
+the Arduino serial port.
+
+Example:
+ --------------------------------------------------------------------------------
+| Command Line Testing Example                                                   |
+|                                                                                |
+| -> help                                                                        |
+|                                                                                |
+| Command Line Testing                                                           |
+| Available commands                                                             |
+| ------------------                                                             |
+| help [<cls>]          : Display list of commands (clear screen)                |
+| h                     : alias for help                                         |
+| ?                     : alias for help                                         |
+| led [<on | off | hb>] : Show/control the Status LED                            |
+| show [params]         : Show command line parameters                           |
+| input [vals]          : Show/set command line value                            |
+|                                                                                |
+| ->                                                                             |
+|                                                                                |
+ --------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------
+
+Available Functions:
+
+ /*
+  * WHAT:
+  *  A constructor that sets up the command line processing code.
+  *  Note: Defaults to enable echo of incoming characters.
+  *
+  * PARAMETERS:
+  *  Stream& _serial = the stream that a command line is implemented on (typically 'Serial')
+  */
+ CommandLine(Stream& serial);
+ 
+ /*
+  * WHAT:
+  *  A constructor that sets up the command line processing code.
+  *
+  * PARAMETERS:
+  *  Stream& _serial = the stream that a command line is implemented on (typically 'Serial')
+  *  bool _echoEnable = a flag that is used to enable/disable echo of incoming characters
+  *                     (true = enable echo, false = disable echo)
+  */
+ CommandLine(Stream& serial, bool echoEnable);
+ 
+ /*
+  * WHAT:
+  *  Implements the non-blocking serial command processing.
+  *  Note: This should be called in 'loop' to check for/process incoming commands.
+  *
+  * RETURN VALUES:
+  *  int8_t = 0 = no command to process yet
+  *           1 = a command was processed
+  */
+ int8_t DoCmdLine(void);
+ 
+ /*
+  * WHAT:
+  *  Support routine that parses a command parameter string into a decimal or hex
+  *  numeric value or identifies it as a quoted string.
+  *
+  * PARAMETERS:
+  *  char * param = parameter string to parse
+  *  int32_t * retval = place for parsed numeric value (if type DECVAL or HEXVAL)
+  *
+  * RETURN VALUES:
+  *  int8_t = type of parameter
+  *            - DECVAL   = decimal numeric parameter value (1234) - value returned at *retval
+  *            - HEXVAL   = hex numeric parameter value (0x12ab) - value returned at *retval
+  *            - STRVAL   = string parameter value ("quoted string")
+  *            - BADPARAM = bad parameter
+  *
+  * SPECIAL CONSIDERATIONS:
+  *  The command line processor (CmdLineProcess()) does *not* keep the contents
+  *  of a quoted string intact. Each word in the string (a space is considered a
+  *  word delimiter - TABs are not) is placed in a separate argument! (The argument
+  *  with the first word in the quoted string contains the opening quote and the
+  *  argument with the last word in the quoted string contains the closing quote.)
+  */
+ int8_t ParseParam(char * param, int32_t * retval);
+ 
+ /*
+  * WHAT:
+  *  Enables/disables echo of incoming characters. (default is enabled)
+  *  Note: CR/LF will not be echoed if Echo() is enabled and CrLfEcho() is disabled.
+  *
+  * PARAMETERS:
+  *  bool _echoEnable = a flag that is used to enable/disable echo of incoming characters
+  *                     (true = enable echo, false = disable echo)
+  */
+ void Echo(bool echoEnable);
+ 
+ /*
+  * WHAT:
+  *  Enables/disables echo of incoming CR/LF characters. (default is disabled)
+  *  Note: This has no effect if Echo() is disabled.
+  *
+  * PARAMETERS:
+  *  bool _echoEnable = a flag that is used to enable/disable echo of incoming CR/LF characters
+  *                     (true = enable echo, false = disable echo)
+  */
+ void CrLfEcho(bool echoEnable);
+ 
+/*
+ * WHAT:
+ *  Enables/disables sending CR/LF characters before processing command.  (default is enabled)
+ *
+ * PARAMETERS:
+ *  bool _crLfcmdEnable = a flag that is used to enable/disable sending CR/LF characters
+ *                        before processing a command
+ *                        (true = enable CR/LF response, false = disable CR/LF response)
+ */
+void CrLfCommand(bool _crLfcmdEnable);
+
+ /*
+  * WHAT:
+  *  Sets the parameter separator character to use (if other than the default space ' ').
+  *
+  * PARAMETERS:
+  *  char _delimiter = the delimiter (or parameter separator) character
+  */
+ void Delimiter(char delimiter);
+ 
+ /*
+  * WHAT:
+  *  Sets the parameter separator character(s) to use (if other than the default '\r').
+  *
+  * PARAMETERS:
+  *  char * _terminators = the command line terminator character(s) to use (2 maximum supported)
+  */
+ void Terminators(char * terminators);
+ 
+ /*
+  * WHAT:
+  *  Sets the handler function to use for unknown commands (default is none).
+  *
+  * PARAMETERS:
+  *  pfnCmdLine function = the handler function for unknown commands
+  *     Format: int8_t CmdHandler(int8_t argc, char * argv[])
+  *     Usage:  CmdLine.SetDefaultHandler(CmdHandler);
+  */
+ void SetDefaultHandler(pfnCmdLine function);
+
+ /*
+  * WHAT:
+  *  Sets the custom handler function to use for commands errors (default is internal).
+  *
+  * PARAMETERS:
+  *  pfnCustomErrs function = the custom handler function for commands errors
+  *     pfnCustomErrs Format: void ErrHandler(int8_t err_code)
+  *     Usage: CmdLine.SetCustomErrorHandler(ErrHandler);
+  *     (see CommandLineCustomErrs.ino example)
+  */
+ void SetCustomErrorHandler(pfnCustomErrs function);
+
+ /*
+  * WHAT:
+  *  Shows the menu commands.
+  *
+  * PARAMETERS:
+  *  bool help_info_disable = optional flag to disable (if true) showing help information
+  *                           (default = false)
+  */
+ void ShowCommands(bool help_info_disable = false);
+
+ /*
+  * WHAT:
+  *  Flush the serial receive buffer.
+  */
+ void FlushReceive(void)
+
+----------------------------------------------------------------------------------------------------
+
+How to use: (see CommandLineTest.ino example)
+
+ 1) Before setup(), add a line to setup the CommandLine library code
+    Example:
+        // setup CommandLine to use standard Arduino Serial with incoming echo on
+        CommandLine CmdLine(Serial, true);
+
+ 1a) Optional, in setup(), use Echo(), CrLfEcho(), CrLfCommand(), Delimiter(), Terminators(), and
+     SetDefaultHandler() to set incoming echo, incoming CR/LF echo, command CR/LF response,
+     delimitor character, command line termination character(s), and the unknown command handler.
+
+ 2) In loop(), add line to call DoCmdLine()
+    Example:
+        CmdLine.DoCmdLine();
+
+ 3) Declare function names to handle each command
+    Example:
+        int8_t Cmd_led(int8_t argc, char * argv[]);
+
+ 4) Declare variables in Flash memory with the name of each command
+    Example:
+        const char MenuCmdLed[] PROGMEM = "led";
+
+ 5) Declare variables in Flash memory for help information for each command
+    Example:
+        const char MenuHelpLed[] PROGMEM = "[<on | off | hb>] : Show/control the Status LED"";
+
+ 6) Populate the command table array in Flash memory with each command to use
+    Example:
+        const tCmdLineEntry g_sCmdTable[] PROGMEM =
+        {
+            { MenuCmdLed,  Cmd_led, MenuHelpLed },  // the "led" command
+            {     "           "         "       },  // other commands
+            { 0, 0, 0 }                             // end of commands
+        };
+
+ 7) Add the function code for each command to use
+    Example:
+        int8_t Cmd_led(int8_t argc, char * argv[])
+        {
+            // code that the command uses to control the LED (see CommandLineTest.ino example)
+            // use 'argc' to get the count of command line parameters
+            // use 'argv[]' to get each of the command line parameter strings
+            // use ParseParam() to get the value of a decimal or hex command line parameter
+        }
+
+----------------------------------------------------------------------------------------------------
+

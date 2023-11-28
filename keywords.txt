@@ -1,0 +1,49 @@
+#######################################
+# Syntax Coloring Map For CommandLine
+#######################################
+
+#######################################
+# Class (KEYWORD1)
+#######################################
+
+CommandLine	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+DoCmdLine               KEYWORD2
+ParseParam              KEYWORD2
+Echo                    KEYWORD2
+CrLfEcho                KEYWORD2
+CrLfCommand             KEYWORD2
+Delimiter               KEYWORD2
+FlushReceive            KEYWORD2
+SetCustomErrorHandler   KEYWORD2
+SetDefaultHandler       KEYWORD2
+Terminators             KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+CMD      LITERAL1
+ARG1     LITERAL1
+ARG2     LITERAL1
+ARG3     LITERAL1
+ARG4     LITERAL1
+ARG5     LITERAL1
+ARG6     LITERAL1
+ARG7     LITERAL1
+ARG8     LITERAL1
+ARG9     LITERAL1
+
+BADPARAM LITERAL1
+DECVAL   LITERAL1
+HEXVAL   LITERAL1
+STRVAL   LITERAL1
+
+CMDLINE_BAD_CMD        LITERAL1
+CMDLINE_TOO_MANY_ARGS  LITERAL1
+CMDLINE_TOO_FEW_ARGS   LITERAL1
+CMDLINE_INVALID_ARG    LITERAL1
+
